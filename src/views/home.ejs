@@ -12,18 +12,20 @@
 
         <div class="hero-content">
           <div class="hero-left">
-            <div class="hero-text-mask">
-              <h2>More than clothes</h2>
+            <div class="hero-title-group">
+              <div class="hero-text-mask">
+                <h2>More than clothes</h2>
+              </div>
+              <div class="hero-text-mask">
+                <h2>It's a mindset</h2>
+              </div>
             </div>
-            <div class="hero-text-mask">
-              <h2>It's a mindset</h2>
-            </div>
-            <div class="hero-line"></div>
+            <div class="hero-line hero-line-left"></div>
             <div class="hero-btn-wrap">
-              <button class="btn-chrome" id="shop-now-btn">
-                Shop Now
-                <svg viewBox="0 0 24 24">
-                  <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              <button class="hero-shop-btn" id="shop-now-btn">
+                <span>Shop Now</span>
+                <svg viewBox="0 0 24 24" class="hero-btn-arrow">
+                  <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
                     stroke-linejoin="round" />
                 </svg>
               </button>
@@ -31,8 +33,8 @@
           </div>
 
           <div class="hero-right">
-            <p>EST. 2025</p>
-            <div class="hero-line" style="width: 100%; margin-top: 0;"></div>
+            <p>EST. 2026</p>
+            <div class="hero-line hero-line-right"></div>
           </div>
         </div>
       </section>
@@ -40,7 +42,7 @@
       <!-- PRODUCTS SECTION -->
       <section class="products-section" id="products">
         <div class="products-header">
-          <span class="section-tag">// ARCHIVE 2025</span>
+          <span class="section-tag">// ARCHIVE 2026</span>
           <h2 class="chrome-text section-title">THE VEIL COLLECTION</h2>
           <div class="section-rule"></div>
         </div>
@@ -54,21 +56,25 @@
                   <% const secondaryImg=(p.images && p.images.length> 1) ? p.images[1] : null; %>
                     <div class="product-card" data-product-id="<%= p.id %>"
                       data-product-name="<%= p.product || p.name %>" data-product-price="<%= p.price %>"
-                      data-product-img="<%= primaryImg %>">
-                      <div class="product-image-wrap">
-                        <img src="<%= primaryImg %>" alt="<%= p.product || p.name %>" class="product-img-primary">
-                        <% if (secondaryImg) { %>
-                          <img src="<%= secondaryImg %>" alt="<%= p.product || p.name %> front"
-                            class="product-img-secondary">
-                          <% } %>
-                            <div class="product-glare"></div>
-                            <span class="product-badge">DROP 01</span>
-                      </div>
+                      data-product-img="<%= primaryImg %>"
+                      data-product-color="<%= p.color || (p.colors && p.colors[0] ? p.colors[0].name : 'Black') %>">
+                      <a href="/products/<%= p.id %>" class="product-image-link">
+                        <div class="product-image-wrap">
+                          <img src="<%= primaryImg %>" alt="<%= p.product || p.name %>" class="product-img-primary">
+                          <% if (secondaryImg) { %>
+                            <img src="<%= secondaryImg %>" alt="<%= p.product || p.name %> front"
+                              class="product-img-secondary">
+                            <% } %>
+                              <div class="product-glare"></div>
+                        </div>
+                      </a>
                       <div class="product-info">
                         <div class="product-header">
-                          <h3 class="product-title chrome-text">
-                            <%= p.product || p.name %>
-                          </h3>
+                          <a href="/products/<%= p.id %>" class="product-title-link">
+                            <h3 class="product-title chrome-text">
+                              <%= p.product || p.name %>
+                            </h3>
+                          </a>
                           <span class="product-price">
                             <%= p.price %> MAD
                           </span>
@@ -76,16 +82,36 @@
                         <p class="product-desc">
                           <%= p.description %>
                         </p>
-                        <div class="product-sizes">
-                          <% if (p.sizes && p.sizes.length> 0) { %>
-                            <% p.sizes.forEach((size, idx)=> { %>
-                              <button type="button" class="size-chip <%= idx === 0 ? 'selected' : '' %>"
-                                data-size="<%= size %>">
-                                <%= size %>
-                              </button>
-                              <% }); %>
-                                <% } %>
+
+                        <!-- Variants: Sizes & Colors -->
+                        <div class="product-variants-row">
+                          <div class="product-sizes" aria-label="Available sizes">
+                            <% if (p.sizes && p.sizes.length> 0) { %>
+                              <% p.sizes.forEach((size, idx)=> { %>
+                                <button type="button" class="size-chip <%= idx === 0 ? 'selected' : '' %>"
+                                  data-size="<%= size %>" aria-label="Size <%= size %>">
+                                  <%= size.toUpperCase() %>
+                                </button>
+                                <% }); %>
+                                  <% } %>
+                          </div>
+
+                          <% if (p.colors && p.colors.length> 0) { %>
+                            <div class="product-colors" aria-label="Available colors">
+                              <% p.colors.forEach((col, idx)=> { %>
+                                <button type="button" class="color-chip <%= idx === 0 ? 'selected' : '' %>"
+                                  data-color="<%= col.name %>" title="<%= col.name %>"
+                                  aria-label="Color <%= col.name %>">
+                                  <span class="color-swatch-dot" style="background-color: <%= col.hex %>;"></span>
+                                  <span class="color-chip-text">
+                                    <%= col.name %>
+                                  </span>
+                                </button>
+                                <% }); %>
+                            </div>
+                            <% } %>
                         </div>
+
                         <!-- Add to Cart Button -->
                         <button type="button" class="btn-chrome add-to-cart-btn" data-product-id="<%= p.id %>">
                           <span>Add to Cart</span>
@@ -135,12 +161,18 @@
             stagger: 0.2,
             ease: "power3.out"
           }, 0.5)
-          .to(".hero-line", {
-            width: "100%",
-            duration: 1,
-            opacity: 0.5,
+          .to(".hero-line-left", {
+            width: "58px",
+            duration: 0.9,
+            opacity: 1,
             ease: "power2.out"
-          }, 1.2)
+          }, 1.1)
+          .to(".hero-line-right", {
+            width: "58px",
+            duration: 0.9,
+            opacity: 1,
+            ease: "power2.out"
+          }, 1.1)
           .to(".hero-right p", {
             opacity: 1,
             duration: 1

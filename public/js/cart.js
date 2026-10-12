@@ -128,8 +128,9 @@
     cartItemsContainer.innerHTML = '';
 
     cart.forEach((item) => {
-      const itemKey = `${item.id}-${item.size}`;
+      const itemKey = `${item.id}-${item.size}-${item.color || ''}`;
       const lineTotal = ((parseFloat(item.price) || 0) * item.qty).toFixed(2);
+      const colorBadgeHtml = item.color ? ` · COLOR: <strong>${item.color.toUpperCase()}</strong>` : '';
 
       const itemEl = document.createElement('div');
       itemEl.className = 'cart-item';
@@ -143,7 +144,7 @@
             <h4 class="cart-item-name">${item.name}</h4>
             <button class="cart-item-remove-btn" data-key="${itemKey}" title="Remove item" aria-label="Remove item">✕</button>
           </div>
-          <div class="cart-item-size-badge">SIZE: <strong>${item.size || 'STANDARD'}</strong></div>
+          <div class="cart-item-size-badge">SIZE: <strong>${item.size || 'STANDARD'}</strong>${colorBadgeHtml}</div>
           <div class="cart-item-bottom">
             <div class="cart-qty-stepper">
               <button class="cart-qty-btn minus-btn" data-key="${itemKey}" aria-label="Decrease quantity">−</button>
@@ -192,7 +193,7 @@
 
   // Update item quantity
   function updateQuantity(key, delta) {
-    const item = cart.find((i) => `${i.id}-${i.size}` === key);
+    const item = cart.find((i) => `${i.id}-${i.size}-${i.color || ''}` === key);
     if (!item) return;
 
     item.qty = (item.qty || 1) + delta;
@@ -206,15 +207,17 @@
 
   // Remove item
   function removeItem(key) {
-    cart = cart.filter((i) => `${i.id}-${i.size}` !== key);
+    cart = cart.filter((i) => `${i.id}-${i.size}-${i.color || ''}` !== key);
     saveCart();
     showToast('Item removed from Vault');
   }
 
   // Add Item to Cart
   function addToCart(productData) {
+    const itemColor = productData.color || 'Black';
+    const itemSize = productData.size || 'M';
     const existingIndex = cart.findIndex(
-      (item) => item.id === productData.id && item.size === productData.size
+      (item) => item.id === productData.id && item.size === itemSize && (item.color || 'Black') === itemColor
     );
 
     if (existingIndex > -1) {
@@ -224,14 +227,15 @@
         id: productData.id,
         name: productData.name,
         price: productData.price,
-        size: productData.size,
+        size: itemSize,
+        color: itemColor,
         image: productData.image,
         qty: productData.qty || 1,
       });
     }
 
     saveCart();
-    showToast(`Added to Vault — ${productData.name} (${productData.size})`);
+    showToast(`Added to Vault — ${productData.name} (${itemSize} / ${itemColor})`);
     openCart();
   }
 
@@ -258,6 +262,9 @@
       const lineTotal = ((parseFloat(item.price) || 0) * item.qty).toFixed(2);
       message += `*${index + 1}. ${item.name.toUpperCase()}*\n`;
       message += `   ▪ Size: *${item.size}*\n`;
+      if (item.color) {
+        message += `   ▪ Color: *${item.color}*\n`;
+      }
       message += `   ▪ Quantity: *${item.qty}*\n`;
       message += `   ▪ Subtotal: *${lineTotal} MAD*\n\n`;
     });
@@ -270,19 +277,28 @@
     window.open(whatsappUrl, '_blank');
   }
 
-  // Initialize Product Card Interaction (Size Selectors & Add to Cart)
+  // Initialize Product Card Interaction (Size Selectors, Color Selectors & Add to Cart)
   function initProductCards() {
-    // 1. Size Chips Click Selector
     document.querySelectorAll('.product-card').forEach((card) => {
-      const chips = card.querySelectorAll('.size-chip');
-      chips.forEach((chip) => {
+      // 1. Size Chips Click Selector
+      const sizeChips = card.querySelectorAll('.size-chip');
+      sizeChips.forEach((chip) => {
         chip.addEventListener('click', (e) => {
-          chips.forEach((c) => c.classList.remove('selected'));
+          sizeChips.forEach((c) => c.classList.remove('selected'));
           e.currentTarget.classList.add('selected');
         });
       });
 
-      // 2. Add to Cart Button Click
+      // 2. Color Chips Click Selector
+      const colorChips = card.querySelectorAll('.color-chip');
+      colorChips.forEach((chip) => {
+        chip.addEventListener('click', (e) => {
+          colorChips.forEach((c) => c.classList.remove('selected'));
+          e.currentTarget.classList.add('selected');
+        });
+      });
+
+      // 3. Add to Cart Button Click
       const addBtn = card.querySelector('.add-to-cart-btn');
       if (addBtn) {
         addBtn.addEventListener('click', () => {
@@ -292,14 +308,19 @@
           const productImg = card.getAttribute('data-product-img') || '/images/product-placeholder.jpg';
 
           // Selected size (or fallback to first chip)
-          const selectedChip = card.querySelector('.size-chip.selected') || card.querySelector('.size-chip');
-          const size = selectedChip ? selectedChip.getAttribute('data-size') || selectedChip.textContent.trim() : 'M';
+          const selectedSizeChip = card.querySelector('.size-chip.selected') || card.querySelector('.size-chip');
+          const size = selectedSizeChip ? selectedSizeChip.getAttribute('data-size') || selectedSizeChip.textContent.trim() : 'M';
+
+          // Selected color (or fallback to first color chip, or card attribute)
+          const selectedColorChip = card.querySelector('.color-chip.selected') || card.querySelector('.color-chip');
+          const color = selectedColorChip ? selectedColorChip.getAttribute('data-color') : (card.getAttribute('data-product-color') || 'Black');
 
           addToCart({
             id: productId,
             name: productName,
             price: productPrice,
             size: size,
+            color: color,
             image: productImg,
             qty: 1,
           });
@@ -345,9 +366,19 @@
     });
   }
 
+  // Expose global API
+  window.DarkVeilCart = {
+    addItem: addToCart,
+    openCart: openCart,
+    closeCart: closeCart,
+    getCart: () => [...cart]
+  };
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
     init();
   }
 })();
+
+

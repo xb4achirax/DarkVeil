@@ -7,4 +7,8 @@ router.get('/', (req, res) => {
     productsCtrl.GetAll(req, res);
 })
 
+router.get('/:id', (req, res) => {
+    productsCtrl.GetOne(req, res);
+})
+
 export default router;

@@ -1,157 +1,313 @@
-<%- include('partials/head', { title: typeof product !== 'undefined' ? `${product.name} | DARKVEIL` : 'Product | DARKVEIL', extraCss: '<link rel="stylesheet" href="/css/home.css">' }) %>
+<%- include('partials/head', { title: (product.name || product.product || 'Collection' ) + ' | DARKVEIL' ,
+  extraCss: '<link rel="stylesheet" href="/css/product.css">' }) %>
 
-<% 
-  // Fallback data
-  const p = typeof product !== 'undefined' ? product : {
-    id: 1,
-    name: 'OBLIVION HOODIE',
-    description: 'Heavyweight 450gsm cotton. Oversized fit. Dropped shoulders. The armor of the modern dark fantasy.',
-    price: 650,
-    image: '/images/product-placeholder.jpg',
-    sizes: ['S', 'M', 'L', 'XL']
-  };
-%>
+  <%- include('partials/nav') %>
 
-<main style="padding-top: 15vh;">
-  <div style="max-width: 1400px; margin: 0 auto; padding: 0 5%; margin-bottom: 2rem;">
-    <a href="/" class="btn-chrome" style="display: inline-flex; width: auto; padding: 10px 20px;">
-      <svg viewBox="0 0 24 24" style="transform: rotate(180deg); margin-right: 8px;"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Back
-    </a>
-  </div>
+    <main>
+      <section class="pdp">
+        <!-- LEFT: Image Gallery -->
+        <div class="pdp-gallery" id="pdp-gallery">
+          <div class="pdp-gallery-track">
+            <% if (product.images && product.images.length> 0) { %>
+              <% product.images.forEach((img, idx)=> { %>
+                <div class="pdp-gallery-slide <%= idx === 0 ? 'active' : '' %>">
+                  <img src="<%= img %>" alt="<%= product.name || product.product %> - View <%= idx + 1 %>">
+                </div>
+                <% }); %>
+                  <% } else { %>
+                    <div class="pdp-gallery-slide active">
+                      <img src="<%= product.image || product.url || '/images/product-placeholder.jpg' %>"
+                        alt="<%= product.name || product.product %>">
+                    </div>
+                    <% } %>
+                      <div class="pdp-gallery-glare"></div>
+          </div>
 
-  <section class="products-section" style="min-height: auto; padding-top: 2vh;">
-    <div class="products-grid" style="grid-template-columns: 1fr 1fr; gap: 4rem;">
-      <div class="product-image-wrap" style="aspect-ratio: 4 / 5;">
-        <img src="<%= p.image %>" alt="<%= p.name %>" style="width: 100%; height: 100%; object-fit: cover;">
-        <div class="product-glare"></div>
-      </div>
-      
-      <div class="product-info" style="justify-content: center; gap: 2rem;">
-        <div class="product-header" style="flex-direction: column; gap: 1rem; border-bottom: none;">
-          <h1 class="product-title chrome-text" style="font-size: 3rem;"><%= p.name %></h1>
-          <span class="product-price" style="font-size: 1.5rem;"><%= p.price %> MAD</span>
-        </div>
-        
-        <p class="product-desc" style="font-size: 1.1rem; max-width: 80%;"><%= p.description %></p>
-        
-        <div style="margin-top: 1rem;">
-          <p style="margin-bottom: 1rem; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.1em;">Select Size</p>
-          <div class="product-sizes" style="gap: 1rem;">
-            <% if(p.sizes && p.sizes.length > 0) { %>
-              <% p.sizes.forEach(size => { %>
-                <div class="size-chip" style="padding: 0.8rem 1.5rem; font-size: 1rem; cursor: pointer;"><%= size %></div>
-              <% }); %>
+          <% if (product.images && product.images.length> 1) { %>
+            <div class="pdp-gallery-thumbs">
+              <% product.images.forEach((img, idx)=> { %>
+                <div class="pdp-thumb <%= idx === 0 ? 'active' : '' %>" data-slide="<%= idx %>">
+                  <img src="<%= img %>" alt="Thumbnail <%= idx + 1 %>">
+                </div>
+                <% }); %>
+            </div>
             <% } %>
+        </div>
+
+        <!-- RIGHT: Product Details & Purchase Actions -->
+        <div class="pdp-info">
+          <a href="/" class="pdp-back">
+            <svg viewBox="0 0 24 24">
+              <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+            <span>Back</span>
+          </a>
+
+          <span class="pdp-tag">// <%= (product.category || 'COLLECTION' ).toUpperCase() %></span>
+
+          <h1 class="pdp-name chrome-text">
+            <%= product.name || product.product %>
+          </h1>
+
+          <p class="pdp-price">
+            <%= product.price %> MAD
+          </p>
+
+          <div class="pdp-divider"></div>
+
+          <p class="pdp-description">
+            <%= product.description %>
+          </p>
+
+          <!-- VARIANT SELECTORS (COLORS & SIZES) -->
+          <div class="pdp-options-cluster">
+            <!-- COLORS (Only available in DB) -->
+            <% if (product.colors && product.colors.length> 0) { %>
+              <div class="pdp-option-group">
+                <div class="pdp-group-header">
+                  <span class="pdp-group-label">Color</span>
+                  <span class="pdp-active-color-name" id="pdp-color-name">
+                    <%= product.colors[0].name.toUpperCase() %>
+                  </span>
+                </div>
+                <div class="pdp-color-chips" id="pdp-colors">
+                  <% product.colors.forEach((col, idx)=> { %>
+                    <button type="button" class="pdp-color-chip <%= idx === 0 ? 'selected' : '' %>"
+                      data-color="<%= col.name %>" data-hex="<%= col.hex %>" aria-label="Color <%= col.name %>"
+                      title="<%= col.name %>">
+                      <span class="pdp-color-circle" style="background-color: <%= col.hex %>;"></span>
+                      <span class="pdp-color-chip-text">
+                        <%= col.name %>
+                      </span>
+                    </button>
+                    <% }); %>
+                </div>
+              </div>
+              <% } %>
+
+                <!-- SIZES (Available in DB) -->
+                <% const availableSizes=(product.sizes && product.sizes.length> 0) ? product.sizes : ['S', 'M', 'L',
+                  'XL']; %>
+                  <div class="pdp-option-group">
+                    <div class="pdp-group-header">
+                      <span class="pdp-group-label">Size</span>
+                      <span class="pdp-group-meta">Oversized Fit</span>
+                    </div>
+                    <div class="pdp-size-chips" id="pdp-sizes">
+                      <% availableSizes.forEach((size, idx)=> { %>
+                        <button type="button" class="pdp-size-chip <%= idx === 0 ? 'selected' : '' %>"
+                          data-size="<%= size %>" aria-label="Size <%= size %>">
+                          <%= size.toUpperCase() %>
+                        </button>
+                        <% }); %>
+                    </div>
+                  </div>
+          </div>
+
+          <!-- ACTION BUTTONS: QUANTITY & ADD TO CART -->
+          <div class="pdp-actions-row">
+            <!-- Quantity Stepper -->
+            <div class="pdp-qty-stepper">
+              <button type="button" class="pdp-qty-btn" id="pdp-qty-minus" aria-label="Decrease quantity">−</button>
+              <span class="pdp-qty-val" id="pdp-qty-val">1</span>
+              <button type="button" class="pdp-qty-btn" id="pdp-qty-plus" aria-label="Increase quantity">+</button>
+            </div>
+
+            <!-- Add to Cart CTA -->
+            <button type="button" class="pdp-add-btn btn-chrome" id="pdp-add-to-cart"
+              data-product-id="<%= product.id %>" data-product-name="<%= product.name || product.product %>"
+              data-product-price="<%= product.price %>"
+              data-product-img="<%= product.image || (product.images && product.images[0]) || '/images/product-placeholder.jpg' %>">
+              <svg viewBox="0 0 24 24" class="pdp-add-icon">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" stroke="currentColor" stroke-width="1.6"
+                  stroke-linecap="round" stroke-linejoin="round" fill="none" />
+                <line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="1.6" />
+                <path d="M16 10a4 4 0 0 1-8 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                  stroke-linejoin="round" fill="none" />
+              </svg>
+              <span class="pdp-add-text">Add to Cart</span>
+              <span class="pdp-add-separator">·</span>
+              <span class="pdp-add-price">
+                <%= product.price %> MAD
+              </span>
+            </button>
+          </div>
+
+          <!-- Product Meta Strip -->
+          <div class="pdp-meta">
+            <div class="pdp-meta-item">
+              <span class="pdp-meta-label">Selected Color</span>
+              <span class="pdp-meta-value" id="pdp-meta-color-val">
+                <%= (product.colors && product.colors.length> 0) ? product.colors[0].name : (product.color || 'Black')
+                  %>
+              </span>
+            </div>
+            <div class="pdp-meta-item">
+              <span class="pdp-meta-label">Category</span>
+              <span class="pdp-meta-value">
+                <%= product.category || 'Tops' %>
+              </span>
+            </div>
+            <div class="pdp-meta-item">
+              <span class="pdp-meta-label">Shipping</span>
+              <span class="pdp-meta-value">Free Delivery</span>
+            </div>
           </div>
         </div>
+      </section>
+    </main>
 
-        <button class="btn-chrome whatsapp-btn" data-product="<%= p.name %>" style="margin-top: 2rem; align-self: flex-start; padding: 18px 40px;">
-          Order on WhatsApp
-          <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-      </div>
-    </div>
-  </section>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        /* ── Image Gallery Switching ── */
+        const slides = document.querySelectorAll('.pdp-gallery-slide');
+        const thumbs = document.querySelectorAll('.pdp-thumb');
 
-  <!-- CLOSING SECTION -->
-  <section class="closing-section">
-    <footer>
-      <p>DARKVEIL</p>
-      <p>&copy; DARKVEIL</p>
-    </footer>
-  </section>
-</main>
-
-<script>
-  const WHATSAPP_NUMBER = "<%= typeof whatsappNumber !== 'undefined' ? whatsappNumber : '212600000000' %>";
-
-  document.querySelectorAll('.whatsapp-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const productName = e.currentTarget.getAttribute('data-product');
-      const message = encodeURIComponent(`Hi, I'm interested in the ${productName}`);
-      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
-    });
-  });
-
-  document.addEventListener("DOMContentLoaded", () => {
-    // Reveal animation
-    gsap.from(".product-image-wrap", {
-      opacity: 0,
-      x: -50,
-      duration: 1.2,
-      ease: "power3.out"
-    });
-
-    gsap.from(".product-info > *", {
-      opacity: 0,
-      y: 30,
-      duration: 1,
-      stagger: 0.15,
-      ease: "power3.out",
-      delay: 0.3
-    });
-
-    // 3D Tilt Effect
-    if (matchMedia('(pointer: fine)').matches) {
-      const wrap = document.querySelector('.product-image-wrap');
-      const img = wrap.querySelector('img');
-      const glare = wrap.querySelector('.product-glare');
-      
-      wrap.addEventListener('mousemove', (e) => {
-        const rect = wrap.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
-        
-        const rotateX = ((y - centerY) / centerY) * -5;
-        const rotateY = ((x - centerX) / centerX) * 5;
-        
-        gsap.to(img, {
-          rotationX: rotateX,
-          rotationY: rotateY,
-          transformPerspective: 1000,
-          ease: "power1.out",
-          duration: 0.5
+        thumbs.forEach(thumb => {
+          thumb.addEventListener('click', () => {
+            const idx = parseInt(thumb.dataset.slide);
+            slides.forEach(s => s.classList.remove('active'));
+            thumbs.forEach(t => t.classList.remove('active'));
+            if (slides[idx]) slides[idx].classList.add('active');
+            thumb.classList.add('active');
+          });
         });
-        
-        gsap.to(glare, {
-          background: `radial-gradient(circle at ${x}px ${y}px, rgba(255,255,255,0.15) 0%, transparent 50%)`,
-          duration: 0
+
+        /* ── Color Selection ── */
+        const colorChips = document.querySelectorAll('.pdp-color-chip');
+        const colorNameLabel = document.getElementById('pdp-color-name');
+        const metaColorVal = document.getElementById('pdp-meta-color-val');
+
+        colorChips.forEach(chip => {
+          chip.addEventListener('click', () => {
+            colorChips.forEach(c => c.classList.remove('selected'));
+            chip.classList.add('selected');
+            const selectedColor = chip.dataset.color || 'Black';
+            if (colorNameLabel) colorNameLabel.textContent = selectedColor.toUpperCase();
+            if (metaColorVal) metaColorVal.textContent = selectedColor;
+          });
         });
-      });
-      
-      wrap.addEventListener('mouseleave', () => {
-        gsap.to(img, {
-          rotationX: 0,
-          rotationY: 0,
-          ease: "power3.out",
-          duration: 1
+
+        /* ── Size Selection ── */
+        const sizeChips = document.querySelectorAll('.pdp-size-chip');
+        sizeChips.forEach(chip => {
+          chip.addEventListener('click', () => {
+            sizeChips.forEach(c => c.classList.remove('selected'));
+            chip.classList.add('selected');
+          });
         });
+
+        /* ── Quantity Counter ── */
+        let quantity = 1;
+        const qtyVal = document.getElementById('pdp-qty-val');
+        const minusBtn = document.getElementById('pdp-qty-minus');
+        const plusBtn = document.getElementById('pdp-qty-plus');
+
+        if (minusBtn && plusBtn && qtyVal) {
+          minusBtn.addEventListener('click', () => {
+            if (quantity > 1) {
+              quantity--;
+              qtyVal.textContent = quantity;
+            }
+          });
+          plusBtn.addEventListener('click', () => {
+            if (quantity < 10) {
+              quantity++;
+              qtyVal.textContent = quantity;
+            }
+          });
+        }
+
+        /* ── Add to Cart Click Handler ── */
+        const addBtn = document.getElementById('pdp-add-to-cart');
+        if (addBtn) {
+          addBtn.addEventListener('click', () => {
+            const selectedSizeChip = document.querySelector('.pdp-size-chip.selected');
+            const size = selectedSizeChip ? selectedSizeChip.dataset.size : (sizeChips[0]?.dataset.size || 'M');
+
+            const selectedColorChip = document.querySelector('.pdp-color-chip.selected');
+            const color = selectedColorChip ? selectedColorChip.dataset.color : (colorChips[0]?.dataset.color || 'Black');
+
+            const item = {
+              id: addBtn.dataset.productId,
+              name: addBtn.dataset.productName,
+              price: parseFloat(addBtn.dataset.productPrice),
+              image: addBtn.dataset.productImg,
+              size: size,
+              color: color,
+              qty: quantity
+            };
+
+            if (window.DarkVeilCart && typeof window.DarkVeilCart.addItem === 'function') {
+              window.DarkVeilCart.addItem(item);
+            } else {
+              try {
+                let cart = JSON.parse(localStorage.getItem('DARKVEIL_CART_V1') || '[]');
+                const existing = cart.find(c => c.id == item.id && c.size == item.size && c.color == item.color);
+                if (existing) {
+                  existing.qty = (existing.qty || 1) + item.qty;
+                } else {
+                  cart.push(item);
+                }
+                localStorage.setItem('DARKVEIL_CART_V1', JSON.stringify(cart));
+              } catch (e) {
+                console.error(e);
+              }
+            }
+
+            // Button Visual Feedback
+            const originalHtml = addBtn.innerHTML;
+            addBtn.innerHTML = `
+        <span style="letter-spacing:0.18em; font-weight:600; color:#050505;">Added to Vault ✓</span>
+      `;
+            addBtn.style.background = '#ffffff';
+            addBtn.style.color = '#050505';
+            addBtn.style.boxShadow = '0 0 30px rgba(255, 255, 255, 0.4)';
+
+            setTimeout(() => {
+              addBtn.innerHTML = originalHtml;
+              addBtn.style.background = '';
+              addBtn.style.color = '';
+              addBtn.style.boxShadow = '';
+            }, 1600);
+          });
+        }
+
+        /* ── Fast Smooth Page Entrance ── */
+        if (typeof gsap !== 'undefined') {
+          gsap.from(".pdp-gallery", { opacity: 0, x: -30, duration: 0.7, ease: "power2.out" });
+          gsap.from([".pdp-tag", ".pdp-name", ".pdp-price", ".pdp-divider", ".pdp-description"], {
+            opacity: 0,
+            y: 12,
+            stagger: 0.06,
+            duration: 0.5,
+            ease: "power2.out"
+          });
+          gsap.from([".pdp-options-cluster", ".pdp-actions-row", ".pdp-meta"], {
+            opacity: 0,
+            y: 10,
+            stagger: 0.08,
+            duration: 0.5,
+            delay: 0.15,
+            ease: "power2.out"
+          });
+        }
+
+        /* ── Gallery Glare Mousemove Effect ── */
+        if (matchMedia('(pointer: fine)').matches) {
+          const gallery = document.querySelector('.pdp-gallery');
+          const glare = document.querySelector('.pdp-gallery-glare');
+          if (gallery && glare) {
+            gallery.addEventListener('mousemove', (e) => {
+              const rect = gallery.getBoundingClientRect();
+              const x = e.clientX - rect.left;
+              const y = e.clientY - rect.top;
+              glare.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255,255,255,0.12) 0%, transparent 55%)`;
+            });
+          }
+        }
       });
-    }
+    </script>
 
-    // Size chip selection interaction
-    const chips = document.querySelectorAll('.size-chip');
-    chips.forEach(chip => {
-      chip.addEventListener('click', () => {
-        chips.forEach(c => c.style.borderColor = 'rgba(255, 255, 255, 0.15)');
-        chips.forEach(c => c.style.color = 'var(--chrome-mid)');
-        chip.style.borderColor = 'var(--chrome-light)';
-        chip.style.color = 'var(--chrome-light)';
-      });
-    });
-  });
-</script>
-
-<style>
-@media (max-width: 900px) {
-  .products-grid {
-    grid-template-columns: 1fr !important;
-  }
-}
-</style>
-
-<%- include('partials/foot') %>
+    <%- include('partials/foot') %>

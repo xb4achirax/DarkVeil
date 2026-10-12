@@ -1,0 +1,532 @@
+/* ========================================================
+   DARKVEIL - PRODUCT DETAIL PAGE
+   ======================================================== */
+
+/* Page Layout */
+.pdp {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  background: var(--bg-color, #050505);
+}
+
+/* ─── IMAGE GALLERY (Left Panel) ─── */
+.pdp-gallery {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  background: #040406;
+}
+
+.pdp-gallery-track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.pdp-gallery-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pdp-gallery-slide.active {
+  opacity: 1;
+}
+
+.pdp-gallery-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Gallery glare overlay */
+.pdp-gallery-glare {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.08) 0%, transparent 55%);
+  opacity: 0;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  z-index: 3;
+  transition: opacity 0.3s ease;
+}
+
+.pdp-gallery:hover .pdp-gallery-glare {
+  opacity: 1;
+}
+
+/* Gallery Thumbnails */
+.pdp-gallery-thumbs {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 5;
+}
+
+.pdp-thumb {
+  width: 52px;
+  height: 64px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  overflow: hidden;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: all 0.3s ease;
+  background: #08080a;
+}
+
+.pdp-thumb.active {
+  border-color: rgba(255, 255, 255, 0.95);
+  opacity: 1;
+  box-shadow: 0 0 18px rgba(255, 255, 255, 0.3);
+}
+
+.pdp-thumb:hover {
+  opacity: 0.9;
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.pdp-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pdp-gallery::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(transparent, rgba(4, 4, 6, 0.85));
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ─── PRODUCT INFO (Right Panel) ─── */
+.pdp-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 40px 7% 40px;
+  min-height: 100vh;
+  position: relative;
+  background: radial-gradient(circle at 100% 50%, rgba(22, 22, 28, 0.45) 0%, transparent 65%);
+}
+
+/* Back link */
+.pdp-back {
+  position: absolute;
+  top: 32px;
+  left: 7%;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.76rem;
+  letter-spacing: 0.2em;
+  color: var(--text-muted, #888888);
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 0.3s ease;
+}
+
+.pdp-back:hover {
+  color: var(--chrome-light, #ffffff);
+}
+
+.pdp-back svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  fill: none;
+  transition: transform 0.3s ease;
+}
+
+.pdp-back:hover svg {
+  transform: translateX(-4px);
+}
+
+/* Tag / Category */
+.pdp-tag {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.7rem;
+  letter-spacing: 0.35em;
+  color: var(--text-muted, #888888);
+  text-transform: uppercase;
+  margin-bottom: 0.6rem;
+  opacity: 0.8;
+}
+
+/* Product Name */
+.pdp-name {
+  font-family: var(--font-display, 'Cinzel', serif);
+  font-size: clamp(1.85rem, 2.8vw, 2.6rem);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1.15;
+  margin-bottom: 0.5rem;
+}
+
+/* Price */
+.pdp-price {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 1.35rem;
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  color: #dedede;
+  margin-bottom: 1.2rem;
+}
+
+/* Divider */
+.pdp-divider {
+  width: 45px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.25);
+  margin-bottom: 1.2rem;
+}
+
+/* Description */
+.pdp-description {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: var(--text-muted, #999999);
+  font-weight: 300;
+  max-width: 460px;
+  margin-bottom: 1.6rem;
+}
+
+/* ─── VARIANT SELECTORS (COLORS & SIZES) ─── */
+.pdp-options-cluster {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  margin-bottom: 1.8rem;
+  max-width: 480px;
+}
+
+.pdp-option-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.pdp-group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.pdp-group-label {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  color: #b0b0b0;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.pdp-active-color-name,
+.pdp-group-meta {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+}
+
+/* Color Chips */
+.pdp-color-chips {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pdp-color-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.03);
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  color: #cccccc;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  backdrop-filter: blur(8px);
+}
+
+.pdp-color-circle {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+  display: inline-block;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.15);
+}
+
+.pdp-color-chip:hover {
+  border-color: rgba(255, 255, 255, 0.75);
+  color: #ffffff;
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.pdp-color-chip.selected {
+  border-color: #ffffff;
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 0 18px rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+/* Size Chips */
+.pdp-size-chips {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pdp-size-chip {
+  min-width: 48px;
+  height: 48px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.03);
+  color: #cccccc;
+  font-family: var(--font-display, 'Cinzel', serif);
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  backdrop-filter: blur(8px);
+}
+
+.pdp-size-chip:hover {
+  border-color: rgba(255, 255, 255, 0.8);
+  color: #ffffff;
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.09);
+  box-shadow: 0 4px 14px rgba(255, 255, 255, 0.1);
+}
+
+.pdp-size-chip.selected {
+  border-color: #ffffff;
+  background: #ffffff;
+  color: #050505;
+  font-weight: 700;
+  transform: translateY(-2px);
+  box-shadow: 0 0 22px rgba(255, 255, 255, 0.35);
+}
+
+/* ─── ADD TO CART & QUANTITY ─── */
+.pdp-actions-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 2rem;
+  max-width: 480px;
+}
+
+/* Quantity Stepper */
+.pdp-qty-stepper {
+  display: flex;
+  align-items: center;
+  height: 52px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(8px);
+}
+
+.pdp-qty-btn {
+  width: 40px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pdp-qty-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.pdp-qty-val {
+  min-width: 34px;
+  text-align: center;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: #ffffff;
+  user-select: none;
+}
+
+/* Primary Add to Cart Button */
+.pdp-add-btn {
+  flex: 1;
+  height: 52px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 0 24px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+  font-family: var(--font-display, 'Cinzel', serif);
+  font-size: 0.9rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  backdrop-filter: blur(10px);
+}
+
+.pdp-add-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #ffffff;
+  transform: translateX(-101%);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 0;
+}
+
+.pdp-add-btn:hover {
+  color: #050505;
+  border-color: #ffffff;
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.4);
+}
+
+.pdp-add-btn:hover::before {
+  transform: translateX(0);
+}
+
+.pdp-add-btn:active {
+  transform: scale(0.98);
+}
+
+.pdp-add-btn > * {
+  position: relative;
+  z-index: 1;
+}
+
+.pdp-add-icon {
+  width: 17px;
+  height: 17px;
+  stroke: currentColor;
+  fill: none;
+  transition: transform 0.3s ease;
+}
+
+.pdp-add-btn:hover .pdp-add-icon {
+  transform: scale(1.1);
+}
+
+.pdp-add-text {
+  font-weight: 600;
+}
+
+.pdp-add-separator {
+  opacity: 0.4;
+  font-size: 1rem;
+}
+
+.pdp-add-price {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.84rem;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  opacity: 0.9;
+}
+
+/* Detail/Meta strip */
+.pdp-meta {
+  display: flex;
+  gap: 2rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  max-width: 480px;
+}
+
+.pdp-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.pdp-meta-label {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.65rem;
+  letter-spacing: 0.22em;
+  color: var(--text-muted, #888888);
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.pdp-meta-value {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.85);
+  letter-spacing: 0.05em;
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 960px) {
+  .pdp {
+    grid-template-columns: 1fr;
+  }
+
+  .pdp-gallery {
+    position: relative;
+    height: 60vh;
+  }
+
+  .pdp-info {
+    padding: 40px 6% 60px;
+    min-height: auto;
+  }
+
+  .pdp-back {
+    position: relative;
+    top: auto;
+    left: auto;
+    margin-bottom: 1.5rem;
+  }
+
+  .pdp-name {
+    font-size: 1.8rem;
+  }
+
+  .pdp-actions-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pdp-qty-stepper {
+    justify-content: center;
+  }
+}
