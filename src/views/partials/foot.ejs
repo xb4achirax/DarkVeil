@@ -1,0 +1,87 @@
+  <!-- Global JS: Cursor and Smooth Scroll -->
+  <script>
+    // Initialize Lenis
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      direction: 'vertical',
+      gestureDirection: 'vertical',
+      smooth: true,
+      mouseMultiplier: 1,
+      smoothTouch: false,
+      touchMultiplier: 2,
+      infinite: false,
+    });
+
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
+    // GSAP ScrollTrigger Integration
+    gsap.registerPlugin(ScrollTrigger);
+    
+    lenis.on('scroll', ScrollTrigger.update);
+
+    gsap.ticker.add((time)=>{
+      lenis.raf(time * 1000);
+    });
+    
+    gsap.ticker.lagSmoothing(0);
+
+    // Scroll Progress
+    const scrollProgress = document.querySelector('.scroll-progress');
+    lenis.on('scroll', (e) => {
+      if (scrollProgress) {
+        scrollProgress.style.width = `${e.progress * 100}%`;
+      }
+    });
+
+    // Custom Cursor
+    const cursorDot = document.querySelector('.cursor-dot');
+    const cursorRing = document.querySelector('.cursor-ring');
+    
+    if (matchMedia('(pointer: fine)').matches) {
+      let mouseX = 0, mouseY = 0;
+      let ringX = 0, ringY = 0;
+      
+      window.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        
+        // Instant dot movement
+        if(cursorDot) {
+          cursorDot.style.left = `${mouseX}px`;
+          cursorDot.style.top = `${mouseY}px`;
+        }
+      });
+      
+      // Smooth ring movement
+      const render = () => {
+        ringX += (mouseX - ringX) * 0.15;
+        ringY += (mouseY - ringY) * 0.15;
+        
+        if(cursorRing) {
+          cursorRing.style.left = `${ringX}px`;
+          cursorRing.style.top = `${ringY}px`;
+        }
+        requestAnimationFrame(render);
+      };
+      render();
+
+      // Hover effects
+      const interactiveElements = document.querySelectorAll('a, button, .product-image-wrap');
+      interactiveElements.forEach(el => {
+        el.addEventListener('mouseenter', () => cursorRing?.classList.add('hovered'));
+        el.addEventListener('mouseleave', () => cursorRing?.classList.remove('hovered'));
+      });
+    }
+  </script>
+  
+  <script>
+    window.DARKVEIL_WHATSAPP_NUMBER = "<%= typeof whatsappNumber !== 'undefined' ? whatsappNumber : '0671687435' %>";
+  </script>
+  <script src="/js/cart.js"></script>
+</body>
+</html>
