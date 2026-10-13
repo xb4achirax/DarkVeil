@@ -429,7 +429,7 @@
   transform: scale(0.98);
 }
 
-.pdp-add-btn > * {
+.pdp-add-btn>* {
   position: relative;
   z-index: 1;
 }
@@ -538,11 +538,11 @@
 
 /* Mobile */
 @media (max-width: 640px) {
-  /* Gallery — taller so the full product is visible */
+
+  /* Gallery — full width, tall so more of the product shows */
   .pdp-gallery {
-    height: 85vw;
-    min-height: 340px;
-    max-height: 560px;
+    height: 60svh;
+    min-height: 320px;
   }
 
   .pdp-gallery-thumbs {
@@ -656,7 +656,8 @@
 
   .pdp-add-separator,
   .pdp-add-price {
-    display: none; /* Keep the button lean on mobile */
+    display: none;
+    /* Keep the button lean on mobile */
   }
 
   /* Meta strip */
@@ -678,7 +679,7 @@
 /* Tiny phones (≤ 380px) */
 @media (max-width: 380px) {
   .pdp-gallery {
-    height: 90vw;
+    height: 60svh;
     min-height: 320px;
   }
 
