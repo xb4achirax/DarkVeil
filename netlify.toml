@@ -2,6 +2,12 @@
   publish = "public"
   functions = "netlify/functions"
 
+[build.environment]
+  # ca.pem is the database provider's public CA certificate (not a private key),
+  # bundled with the function for TLS verification.
+  SECRETS_SCAN_OMIT_PATHS = "ca.pem,db/*.sql"
+  SECRETS_SCAN_OMIT_KEYS = "DB_NAME,DB_PORT,DB_USER"
+
 [functions]
   node_bundler = "esbuild"
   external_node_modules = ["express", "ejs", "mysql2"]
@@ -11,6 +17,3 @@
   from = "/*"
   to = "/.netlify/functions/index"
   status = 200
-
-  [build.environment]
-  SECRETS_SCAN_OMIT_KEYS = "DB_NAME,DB_PORT,DB_USER"
