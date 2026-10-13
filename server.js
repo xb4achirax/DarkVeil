@@ -33,6 +33,8 @@ app.get('/', (req, res) => {
 })
 
 
-app.listen(port, () => {
-    console.log(`🚀 https://localhost:${port} 🚀`)
-})
+// app.listen(port, () => {
+//     console.log(`🚀 https://localhost:${port} 🚀`)
+// })
+
+export default { app }
