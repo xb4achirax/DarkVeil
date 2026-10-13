@@ -7,7 +7,6 @@ import productsCtrl from './src/controllers/productsCtrl.js';
 
 
 const app = express();
-const port = process.env.PORT || 3001;
 
 const root = process.cwd();
 

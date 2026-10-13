@@ -538,11 +538,11 @@
 
 /* Mobile */
 @media (max-width: 640px) {
-  /* Gallery becomes a horizontal swipeable strip */
+  /* Gallery — taller so the full product is visible */
   .pdp-gallery {
-    height: 60vw;
-    min-height: 260px;
-    max-height: 400px;
+    height: 85vw;
+    min-height: 340px;
+    max-height: 560px;
   }
 
   .pdp-gallery-thumbs {
@@ -678,7 +678,8 @@
 /* Tiny phones (≤ 380px) */
 @media (max-width: 380px) {
   .pdp-gallery {
-    height: 70vw;
+    height: 90vw;
+    min-height: 320px;
   }
 
   .pdp-name {
