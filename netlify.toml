@@ -6,7 +6,9 @@
   # ca.pem is the database provider's public CA certificate (not a private key),
   # bundled with the function for TLS verification.
   SECRETS_SCAN_OMIT_PATHS = "ca.pem,db/*.sql"
-  SECRETS_SCAN_OMIT_KEYS = "DB_NAME,DB_PORT,DB_USER"
+  # WHATSAPP_NUMBER is the public customer contact number rendered into the page
+  # and cart.js by design; PORT is a short non-secret value that matches node_modules.
+  SECRETS_SCAN_OMIT_KEYS = "DB_NAME,DB_PORT,DB_USER,WHATSAPP_NUMBER,PORT"
 
 [functions]
   node_bundler = "esbuild"
