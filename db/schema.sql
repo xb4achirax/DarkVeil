@@ -80,3 +80,32 @@ CREATE TABLE product_images (
     FOREIGN KEY (color_id) REFERENCES product_colors(id)
     ON DELETE CASCADE
 );
+
+
+-- USERS AND LOGIN
+
+CREATE TABLE IF NOT EXISTS users (
+  id          INT NOT NULL AUTO_INCREMENT,
+  name        VARCHAR(100) NOT NULL,
+  email       VARCHAR(255) NOT NULL,
+  password    VARCHAR(255) NULL,
+  role        ENUM('admin', 'user') NOT NULL DEFAULT 'user',
+  created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_users_email (email)
+);
+
+CREATE TABLE auth_provider (
+  id          INT NOT NULL AUTO_INCREMENT,
+  id_user     INT NOT NULL,
+  name        VARCHAR(50) NOT NULL DEFAULT 'google',
+  email       VARCHAR(255) NULL,
+  google_id   VARCHAR(255) NOT NULL,
+  created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_auth_provider_google_id (google_id),
+  KEY idx_auth_provider_user (id_user),
+  CONSTRAINT fk_auth_provider_user
+    FOREIGN KEY (id_user) REFERENCES users(id)
+    ON DELETE CASCADE
+);

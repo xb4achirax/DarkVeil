@@ -1,13 +1,95 @@
-<!-- FLOATING CART BUTTON (Directly on Hero Section Top-Right) -->
-<button class="cart-trigger-btn" id="open-cart-btn" aria-label="Open shopping vault">
-  <svg viewBox="0 0 24 24" class="cart-trigger-icon">
-    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-    <line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M16 10a4 4 0 0 1-8 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-  </svg>
-  <span class="cart-trigger-text">VAULT</span>
-  <span class="cart-count-badge" id="cart-count-badge">0</span>
-</button>
+<!-- ACCOUNT AND CART ACTIONS -->
+<div class="header-actions">
+  <% if (typeof isAdmin !== 'undefined' && isAdmin) { %>
+    <a class="admin-nav-link" href="/admin" aria-label="Open admin console">ADMIN</a>
+  <% } %>
+  <button class="account-trigger-btn" id="open-account-btn" type="button" aria-label="Open account panel" aria-expanded="false">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="12" cy="8" r="3.5" />
+      <path d="M4.8 20a7.2 7.2 0 0 1 14.4 0" />
+    </svg>
+    <span class="account-trigger-text"><%= isLoggedIn ? 'ACCOUNT' : 'ACCESS' %></span>
+  </button>
+  <button class="cart-trigger-btn" id="open-cart-btn" aria-label="Open shopping vault">
+    <svg viewBox="0 0 24 24" class="cart-trigger-icon">
+      <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M16 10a4 4 0 0 1-8 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>
+    <span class="cart-trigger-text">VAULT</span>
+    <span class="cart-count-badge" id="cart-count-badge">0</span>
+  </button>
+</div>
+
+<!-- ACCOUNT BACKDROP AND SLIDE-OVER -->
+<div class="account-overlay" id="account-overlay"></div>
+<aside class="account-drawer" id="account-drawer" aria-labelledby="account-title" aria-hidden="true">
+  <div class="account-drawer-header">
+    <span class="account-kicker">// PRIVATE ACCESS</span>
+    <button class="account-close-btn" id="close-account-btn" type="button" aria-label="Close account panel">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M18 6 6 18M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+
+  <div class="account-drawer-content">
+    <div class="account-emblem" aria-hidden="true">
+      <span class="account-emblem-ring"></span>
+      <svg viewBox="0 0 24 24">
+        <circle cx="12" cy="8" r="3.5" />
+        <path d="M4.8 20a7.2 7.2 0 0 1 14.4 0" />
+      </svg>
+    </div>
+
+    <% if (isLoggedIn) { %>
+      <p class="account-overline">DARKVEIL MEMBERS</p>
+      <h2 class="account-title chrome-text" id="account-title">YOU'RE IN THE VEIL</h2>
+      <p class="account-intro" id="account-intro">Your account is active. Step out whenever you're ready.</p>
+      <button class="account-submit-btn" id="account-logout-btn" type="button">
+        <span>SIGN OUT</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M10 17l5-5-5-5m5 5H3m9-9h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6" />
+        </svg>
+      </button>
+      <p class="account-feedback" id="account-feedback" aria-live="polite"></p>
+    <% } else { %>
+      <p class="account-overline">DARKVEIL MEMBERS</p>
+      <h2 class="account-title chrome-text" id="account-title">ENTER THE VEIL</h2>
+      <p class="account-intro" id="account-intro">Your world. Your uniform. Step back into your account.</p>
+
+      <div class="account-mode-switch" role="tablist" aria-label="Choose account action">
+        <button class="account-mode-btn active" id="login-mode-btn" type="button" role="tab" aria-selected="true" aria-controls="account-form" data-mode="login">SIGN IN</button>
+        <button class="account-mode-btn" id="signup-mode-btn" type="button" role="tab" aria-selected="false" aria-controls="account-form" data-mode="signup">CREATE ACCOUNT</button>
+        <span class="account-mode-indicator"></span>
+      </div>
+
+      <form class="account-form" id="account-form" novalidate>
+        <div class="account-field" id="account-name-field" hidden>
+          <label for="account-name">NAME</label>
+          <input id="account-name" name="name" type="text" autocomplete="name" placeholder="Your name" minlength="2">
+        </div>
+        <div class="account-field">
+          <label for="account-email">EMAIL ADDRESS</label>
+          <input id="account-email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required>
+        </div>
+        <div class="account-field">
+          <label for="account-password">PASSWORD</label>
+          <input id="account-password" name="password" type="password" autocomplete="current-password" placeholder="Enter your password" minlength="8" required>
+        </div>
+
+        <button class="account-submit-btn" id="account-submit-btn" type="submit">
+          <span>SIGN IN</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 12h14m-7-7 7 7-7 7" />
+          </svg>
+        </button>
+        <p class="account-feedback" id="account-feedback" aria-live="polite"></p>
+      </form>
+
+    <% } %>
+  </div>
+</aside>
 
 <!-- CART BACKDROP OVERLAY -->
 <div class="cart-overlay" id="cart-overlay"></div>

@@ -63,6 +63,7 @@
   // Open Cart Drawer
   function openCart() {
     if (cartDrawer && cartOverlay) {
+      window.DarkVeilAccount?.closePanel(false);
       cartDrawer.classList.add('active');
       cartOverlay.classList.add('active');
       cartDrawer.setAttribute('aria-hidden', 'false');
@@ -380,5 +381,3 @@
     init();
   }
 })();
-
-

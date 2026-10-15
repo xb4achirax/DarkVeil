@@ -1,0 +1,447 @@
+/* ========================================================
+   DARKVEIL - ACCOUNT ACCESS
+   ======================================================== */
+
+.header-actions {
+  position: fixed;
+  top: 28px;
+  right: 5%;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-actions .cart-trigger-btn {
+  position: static;
+}
+
+.account-trigger-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 42px;
+  padding: 10px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(10, 10, 14, 0.4);
+  color: var(--text-main);
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.account-trigger-btn:hover,
+.account-trigger-btn:focus-visible {
+  border-color: var(--chrome-light);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 22px rgba(255, 255, 255, 0.14), 0 8px 30px rgba(0, 0, 0, 0.8);
+  transform: translateY(-1px);
+}
+
+.account-trigger-btn svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: var(--chrome-light);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.account-trigger-text {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+}
+
+.account-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9992;
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.account-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.account-drawer {
+  position: fixed;
+  inset: 0 0 0 auto;
+  z-index: 9993;
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 480px);
+  height: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  border-left: 1px solid rgba(255, 255, 255, 0.16);
+  background:
+    radial-gradient(ellipse at 85% 11%, rgba(225, 225, 235, 0.12), transparent 34%),
+    radial-gradient(ellipse at 10% 90%, rgba(120, 120, 140, 0.1), transparent 38%),
+    linear-gradient(145deg, rgba(17, 17, 21, 0.98), rgba(5, 5, 7, 0.99) 58%);
+  box-shadow: -24px 0 80px rgba(0, 0, 0, 0.8);
+  transform: translateX(102%);
+  transition: transform 0.48s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.account-drawer::before {
+  position: absolute;
+  top: -170px;
+  right: -150px;
+  width: 390px;
+  height: 390px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+  box-shadow: 0 0 0 24px rgba(255, 255, 255, 0.018), 0 0 0 54px rgba(255, 255, 255, 0.012);
+  content: '';
+  pointer-events: none;
+}
+
+.account-drawer.active {
+  transform: translateX(0);
+}
+
+.account-drawer-header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 76px;
+  padding: 18px 28px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.account-kicker,
+.account-overline {
+  color: var(--chrome-mid);
+  font-size: 0.64rem;
+  letter-spacing: 0.24em;
+}
+
+.account-close-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: transparent;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: border-color 0.25s ease, color 0.25s ease, transform 0.25s ease;
+}
+
+.account-close-btn:hover,
+.account-close-btn:focus-visible {
+  border-color: var(--chrome-light);
+  color: var(--chrome-light);
+  transform: rotate(90deg);
+}
+
+.account-close-btn svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+}
+
+.account-drawer-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+  margin: auto;
+  padding: 26px 34px 34px;
+  overflow-y: auto;
+  scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
+  scrollbar-width: thin;
+}
+
+.account-emblem {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 68px;
+  height: 68px;
+  margin: 0 auto 25px;
+  color: var(--chrome-light);
+}
+
+.account-emblem-ring,
+.account-emblem::before {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transform: rotate(45deg);
+  content: '';
+}
+
+.account-emblem::before {
+  inset: 8px;
+  border-color: rgba(255, 255, 255, 0.14);
+  transform: rotate(0deg);
+}
+
+.account-emblem-ring {
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.12), inset 0 0 18px rgba(255, 255, 255, 0.06);
+  animation: account-emblem-glow 4s ease-in-out infinite;
+}
+
+.account-emblem svg {
+  position: relative;
+  width: 25px;
+  height: 25px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.15;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@keyframes account-emblem-glow {
+  50% {
+    box-shadow: 0 0 34px rgba(255, 255, 255, 0.22), inset 0 0 22px rgba(255, 255, 255, 0.1);
+  }
+}
+
+.account-overline {
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.account-title {
+  margin-bottom: 10px;
+  font-size: clamp(1.45rem, 5vw, 1.9rem);
+  letter-spacing: 0.13em;
+  text-align: center;
+}
+
+.account-intro {
+  max-width: 310px;
+  margin: 0 auto 27px;
+  color: var(--text-muted);
+  font-size: 0.83rem;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.account-mode-switch {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-bottom: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.13);
+}
+
+.account-mode-btn {
+  min-height: 43px;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: 0.67rem;
+  letter-spacing: 0.11em;
+  transition: color 0.25s ease;
+}
+
+.account-mode-btn.active {
+  color: var(--chrome-light);
+}
+
+.account-mode-indicator {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 50%;
+  height: 1px;
+  background: var(--chrome-gradient);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.45);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.account-mode-switch.signup .account-mode-indicator {
+  transform: translateX(100%);
+}
+
+.account-form {
+  display: flex;
+  flex-direction: column;
+  gap: 17px;
+}
+
+.account-field {
+  display: grid;
+  gap: 8px;
+}
+
+.account-field[hidden] {
+  display: none;
+}
+
+.account-field label {
+  color: var(--chrome-mid);
+  font-size: 0.63rem;
+  letter-spacing: 0.17em;
+}
+
+.account-field input {
+  width: 100%;
+  height: 49px;
+  padding: 0 15px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 0;
+  outline: none;
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--chrome-light);
+  font: 400 0.85rem var(--font-body);
+  transition: border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.account-field input::placeholder {
+  color: #68686c;
+}
+
+.account-field input:focus {
+  border-color: rgba(255, 255, 255, 0.58);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.045), 0 0 20px rgba(255, 255, 255, 0.05);
+}
+
+.account-submit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 51px;
+  margin-top: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.76);
+  background: var(--chrome-gradient);
+  background-size: 200% auto;
+  color: #09090b;
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  transition: background-position 0.5s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+#account-logout-btn {
+  width: fit-content;
+  margin: 3px auto 0;
+  padding: 0 28px;
+}
+
+.account-submit-btn:hover {
+  background-position: 100% center;
+  box-shadow: 0 0 28px rgba(255, 255, 255, 0.18);
+  transform: translateY(-1px);
+}
+
+.account-submit-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.25s ease;
+}
+
+.account-submit-btn:hover svg {
+  transform: translateX(3px);
+}
+
+.account-feedback {
+  min-height: 1.25em;
+  margin-top: -8px;
+  color: var(--chrome-mid);
+  font-size: 0.72rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  .header-actions {
+    top: 18px;
+    right: 4%;
+    gap: 8px;
+  }
+
+  .account-trigger-btn {
+    width: 44px;
+    min-height: 42px;
+    padding: 9px 12px;
+  }
+
+  .account-trigger-text {
+    display: none;
+  }
+
+  .account-drawer {
+    border-left: 0;
+  }
+
+  .account-drawer-header {
+    min-height: 66px;
+    padding: 14px 20px;
+  }
+
+  .account-drawer-content {
+    padding: 22px 26px 30px;
+  }
+
+  .account-field input {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 380px) {
+  .header-actions {
+    right: 12px;
+    gap: 6px;
+  }
+
+  .account-drawer-content {
+    padding-right: 20px;
+    padding-left: 20px;
+  }
+
+  .account-mode-btn {
+    font-size: 0.61rem;
+    letter-spacing: 0.08em;
+  }
+
+}
+
+@media (max-height: 700px) {
+  .account-drawer-content {
+    margin: 0 auto;
+  }
+
+  .account-emblem {
+    width: 54px;
+    height: 54px;
+    margin-bottom: 16px;
+  }
+
+  .account-intro {
+    margin-bottom: 18px;
+  }
+}
