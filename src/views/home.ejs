@@ -49,7 +49,6 @@
           <h2 class="chrome-text section-title">THE VEIL COLLECTION</h2>
           <div class="section-rule"></div>
         </div>
-
         <div class="products-grid">
           <% if (typeof products !=='undefined' && products.length> 0) { %>
             <% for (let i=0; i < products.length; i++) { %>
@@ -105,7 +104,7 @@
                                 <button type="button" class="color-chip <%= idx === 0 ? 'selected' : '' %>"
                                   data-color="<%= col.name %>" title="<%= col.name %>"
                                   aria-label="Color <%= col.name %>">
-                                  <span class="color-swatch-dot" style="background-color: <%= col.hex %>;"></span>
+                                  <span class="color-swatch-dot" style="background-color: <%= col.hex %>"></span>
                                   <span class="color-chip-text">
                                     <%= col.name %>
                                   </span>
@@ -143,8 +142,6 @@
 
     <script>
       // WhatsApp number configuration (can be pulled from env in backend and passed to view)
-      const WHATSAPP_NUMBER = "<%= typeof whatsappNumber !== 'undefined' ? whatsappNumber : '212600000000' %>"; // The WhatsApp number
-
 
       // GSAP Animations
       document.addEventListener("DOMContentLoaded", (event) => {

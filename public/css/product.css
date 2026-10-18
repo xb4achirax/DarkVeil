@@ -318,6 +318,10 @@
   backdrop-filter: blur(8px);
 }
 
+.pdp-size-chip[hidden] {
+  display: none;
+}
+
 .pdp-size-chip:hover {
   border-color: rgba(255, 255, 255, 0.8);
   color: #ffffff;

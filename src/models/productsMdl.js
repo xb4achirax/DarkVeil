@@ -31,7 +31,6 @@ async function GetAllProducts() {
                 price: row.price,
                 description: row.description,
                 category: row.category,
-                color: row.color_name || 'Black',
                 colors: [],
                 sizes: [],
                 images: [],
@@ -108,7 +107,6 @@ async function GetProductById(id) {
         price: rows[0].price,
         description: rows[0].description,
         category: rows[0].category,
-        color: rows[0].color_name || 'Black',
         colors: [],
         sizes: [],
         images: []
@@ -117,15 +115,25 @@ async function GetProductById(id) {
     const colorSet = new Set();
     const sizeSet = new Set();
     const imageSet = new Set();
+    const colorsById = new Map();
 
     for (const row of rows) {
         if (row.color_name && !colorSet.has(row.color_name)) {
             colorSet.add(row.color_name);
-            product.colors.push({
+            const color = {
                 id: row.color_id,
                 name: row.color_name,
-                hex: row.color_hex || '#0b0b0b'
-            });
+                hex: row.color_hex || '#0b0b0b',
+                sizes: [],
+                _sizeSet: new Set()
+            };
+            colorsById.set(row.color_id, color);
+            product.colors.push(color);
+        }
+        const color = colorsById.get(row.color_id);
+        if (color && row.size && !color._sizeSet.has(row.size)) {
+            color._sizeSet.add(row.size);
+            color.sizes.push(row.size);
         }
         if (row.size && !sizeSet.has(row.size)) {
             sizeSet.add(row.size);
@@ -139,6 +147,9 @@ async function GetProductById(id) {
 
     if (product.colors.length > 0) {
         product.color = product.colors[0].name;
+        for (const color of product.colors) {
+            delete color._sizeSet;
+        }
     }
 
     product.image = product.images[0] || '/images/product-placeholder.jpg';

@@ -87,20 +87,28 @@
               <% } %>
 
                 <!-- SIZES (Available in DB) -->
-                <% const availableSizes=(product.sizes && product.sizes.length> 0) ? product.sizes : ['S', 'M', 'L',
-                  'XL']; %>
+                <% const hasColorVariants = product.colors && product.colors.length> 0; const initialSizes =
+                  hasColorVariants ? (product.colors[0].sizes || []) : ((product.sizes && product.sizes.length> 0) ?
+                  product.sizes : ['S', 'M', 'L', 'XL']); %>
                   <div class="pdp-option-group">
                     <div class="pdp-group-header">
                       <span class="pdp-group-label">Size</span>
                       <span class="pdp-group-meta">Oversized Fit</span>
                     </div>
                     <div class="pdp-size-chips" id="pdp-sizes">
-                      <% availableSizes.forEach((size, idx)=> { %>
-                        <button type="button" class="pdp-size-chip <%= idx === 0 ? 'selected' : '' %>"
-                          data-size="<%= size %>" aria-label="Size <%= size %>">
-                          <%= size.toUpperCase() %>
-                        </button>
-                        <% }); %>
+                      <% if (hasColorVariants) { product.colors.forEach((color, colorIdx)=> {
+                        (color.sizes || []).forEach((size, sizeIdx)=> { %>
+                          <button type="button" class="pdp-size-chip <%= colorIdx === 0 && sizeIdx === 0 ? 'selected' : '' %>"
+                            data-size="<%= size %>" data-color="<%= color.name %>" <%= colorIdx === 0 ? '' : 'hidden' %>
+                            aria-label="Size <%= size %>">
+                            <%= size.toUpperCase() %>
+                          </button>
+                          <% }); }); } else { initialSizes.forEach((size, idx)=> { %>
+                            <button type="button" class="pdp-size-chip <%= idx === 0 ? 'selected' : '' %>"
+                              data-size="<%= size %>" aria-label="Size <%= size %>">
+                              <%= size.toUpperCase() %>
+                            </button>
+                            <% }); } %>
                     </div>
                   </div>
           </div>
@@ -116,6 +124,7 @@
 
             <!-- Add to Cart CTA -->
             <button type="button" class="pdp-add-btn btn-chrome" id="pdp-add-to-cart"
+              <%= initialSizes.length === 0 ? 'disabled' : '' %>
               data-product-id="<%= product.id %>" data-product-name="<%= product.name || product.product %>"
               data-product-price="<%= product.price %>"
               data-product-img="<%= product.image || (product.images && product.images[0]) || '/images/product-placeholder.jpg' %>">
@@ -139,7 +148,7 @@
             <div class="pdp-meta-item">
               <span class="pdp-meta-label">Selected Color</span>
               <span class="pdp-meta-value" id="pdp-meta-color-val">
-                <%= (product.colors && product.colors.length> 0) ? product.colors[0].name : (product.color || 'Black')
+                <%=product.colors[0].name
                   %>
               </span>
             </div>
@@ -178,6 +187,8 @@
         const colorChips = document.querySelectorAll('.pdp-color-chip');
         const colorNameLabel = document.getElementById('pdp-color-name');
         const metaColorVal = document.getElementById('pdp-meta-color-val');
+        const sizeChips = document.querySelectorAll('.pdp-size-chip');
+        const addBtn = document.getElementById('pdp-add-to-cart');
 
         colorChips.forEach(chip => {
           chip.addEventListener('click', () => {
@@ -186,13 +197,23 @@
             const selectedColor = chip.dataset.color || 'Black';
             if (colorNameLabel) colorNameLabel.textContent = selectedColor.toUpperCase();
             if (metaColorVal) metaColorVal.textContent = selectedColor;
+
+            let firstAvailableSize = null;
+            sizeChips.forEach(sizeChip => {
+              const isAvailable = sizeChip.dataset.color === selectedColor;
+              sizeChip.hidden = !isAvailable;
+              sizeChip.classList.remove('selected');
+              if (isAvailable && !firstAvailableSize) firstAvailableSize = sizeChip;
+            });
+            if (firstAvailableSize) firstAvailableSize.classList.add('selected');
+            if (addBtn) addBtn.disabled = !firstAvailableSize;
           });
         });
 
         /* ── Size Selection ── */
-        const sizeChips = document.querySelectorAll('.pdp-size-chip');
         sizeChips.forEach(chip => {
           chip.addEventListener('click', () => {
+            if (chip.hidden) return;
             sizeChips.forEach(c => c.classList.remove('selected'));
             chip.classList.add('selected');
           });
@@ -220,11 +241,11 @@
         }
 
         /* ── Add to Cart Click Handler ── */
-        const addBtn = document.getElementById('pdp-add-to-cart');
         if (addBtn) {
           addBtn.addEventListener('click', () => {
-            const selectedSizeChip = document.querySelector('.pdp-size-chip.selected');
-            const size = selectedSizeChip ? selectedSizeChip.dataset.size : (sizeChips[0]?.dataset.size || 'M');
+            const selectedSizeChip = document.querySelector('.pdp-size-chip.selected:not([hidden])');
+            if (!selectedSizeChip) return;
+            const size = selectedSizeChip.dataset.size;
 
             const selectedColorChip = document.querySelector('.pdp-color-chip.selected');
             const color = selectedColorChip ? selectedColorChip.dataset.color : (colorChips[0]?.dataset.color || 'Black');
